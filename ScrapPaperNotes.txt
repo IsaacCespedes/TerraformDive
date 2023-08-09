@@ -1,0 +1,46 @@
+Infra Automation
+Open Source, Monetizes TF Cloud
+provision and deploying infra via cfg
+e.g.s create vpc, aws users and permissions, spinning up EC2s, installing docker
+(in correct order)
+
+
+good container orchestration support
+good for replicating envs (e.g. dev, stage, prod)
+
+Ansible is better for cfging images and apps onto a deployed infra.
+Terraform is better for provisioning
+
+The TF core engine parses cfg for desired state and compares to the current deployment state
+It supports many cloud platforms (Iaas), Paas (e.g. kubernetes), and Saas (e.g. fastly CDN)
+
+
+Declarative - cfgs describe desired state instead of actions to take (imperative)
+TF executes the delta of steps to reach desired state
+
+cmds
+`terraform init` - initialize BE locally
+`terraform refresh` - gets current state
+.. plan - previews the delta of necessary actions to reach desired state
+.. apply - executes plan above.
+instance attributes are known after apply.
+you can see deploy in action on cloud UI.
+.. destroy - removes entire deployment
+
+State file -
+reflect deployed infra : IP addrs, ARM, Data blocks (data outside of deployment)
+> has sensitive data (passwords) <
+
+Best Practices
+
+state and state file -
+only update infra through TF commands, not the UI, not the state file.
+create shared remote file for cfg (e.g. s3 with dynamo db for atomic locks, google cloud, TF cloud).
+configure state file locking on storafge. depending on your provider, TF may lock the state file.
+back up state file - enable versioning.
+have 1 state file per env: dev, stage, prod.
+
+Terraform Code / GitOps -
+host tf code in git repo.
+ensure the same review process as application code (i.e. PR reviews).
+only CI/CD pipelines should make infra updates.
