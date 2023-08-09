@@ -19,7 +19,7 @@ Declarative - cfgs describe desired state instead of actions to take (imperative
 TF executes the delta of steps to reach desired state
 
 cmds
-`terraform init` - initialize BE locally
+`terraform init` - initialize BE (local by default)
 `terraform refresh` - gets current state
 .. plan - previews the delta of necessary actions to reach desired state
 .. apply - executes plan above.
@@ -28,7 +28,7 @@ you can see deploy in action on cloud UI.
 .. destroy - removes entire deployment
 
 State file -
-reflect deployed infra : IP addrs, ARM, Data blocks (data outside of deployment)
+reflects deployed infra : IP addrs, ARM, Data blocks (data outside of deployment)
 > has sensitive data (passwords) <
 
 Best Practices
@@ -44,3 +44,17 @@ Terraform Code / GitOps -
 host tf code in git repo.
 ensure the same review process as application code (i.e. PR reviews).
 only CI/CD pipelines should make infra updates.
+
+to run first example
+`brew install terraform`
+google "install aws cli"
+create iam group with permissions
+create iam user and add it to the group
+
+`aws configure`
+click the username in iam > security credentials > create access key to get access key and secret
+stored in ~/.aws/credentials on mac os
+
+`terraform init`
+`terraform plan`
+`terraform apply`
