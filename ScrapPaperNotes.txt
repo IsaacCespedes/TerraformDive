@@ -49,6 +49,12 @@ reflects deployed infra : IP addrs, ARN (unique resource id), Data blocks (data 
 Variables
 Enables templating of configuration blocks and lines
 Variables can be stored in a separate cfg file
+string, nummber, boolean
+list, set, mmap, object, tuple
+custom conditions can be enforced on variables
+e.g. Sensitive = true
+
+Sensitive values are masked in TF CLI output
 
 Input - like input params for a function
 referenced as
@@ -60,6 +66,14 @@ variable "instance_type" {
   type = string
   default = "t2.micro"
 }
+setting precedence, low to high
+cli prompt, when not supplied in cfg
+default value in block
+env variable, prefixed with tf_var_ (used in CI) (good for sensitive values)
+terraform.tfvars in file systemm
+*.auto.tfvars file
+-var "my_var=foo" -var="another_var=bar"...
+or -var-file <myvars.tfvars> option for plan or apply command (also good for sensitive values, can be passed in from AWSS secrets manager, giithub secret, or hashicorp vault)
 
 local Variables - like local variables in a function, good for reuse
 references as
@@ -72,11 +86,26 @@ locals {
 }
 
 output variables - like the return value of a function
+gets values once provisioned (e.g. IP addr)
+logged after apply cmd
 
 declared as
 output "instance_ip" {
   value = aws_instance.instance.public_ip
 }
+
+Expressions and Functions
+template strings, math operators, conditions, loops, maps, and more
+filesystem, date and time, encoding, type conversions and more
+
+Meta-arguments
+depends_on helps the engine maintain order of provisioning
+count allows for creating multiple of the same resource and can be indexed (count.index)
+for_each allows for iterables (e.g. cfg instance for list of subnet ids)
+lifecycle (e.g. before destroy, ignore changes, prevent destroy)
+
+provisioner
+actions on local or remote machine
 
 
 Best Practices
