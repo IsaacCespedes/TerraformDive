@@ -1,8 +1,8 @@
 terraform {
   # Assumes s3 bucket and dynamo DB table already set up
-  # See /code/03-basics/aws-backend
+  # See 02-webapp/backend folder
   backend "s3" {
-    bucket         = "terraform-dive-tf-state"
+    bucket         = "terraform-dive-tf-state" # replace with your bucket name
     key            = "06-organization-and-modules/web-app/terraform.tfstate"
     region         = "us-east-1"
     dynamodb_table = "terraform-state-locking"

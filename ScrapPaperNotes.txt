@@ -132,8 +132,11 @@ module "web-app" {
 Managing Separate Envs
 two approaches
 1 creating workspaces
-`terraform workspace new <workspace name (e.g. dev)>`
+`terraform workspace list`
+`terraform workspace new <workspace name (e.g. dev or production)>`
 this will create a new state in the backend
+`terraform workspace select <workspace name (e.g. dev or production)>`
+
 
 minimizes code duplication
 can be referrenced via terraform.workspace expression
@@ -147,6 +150,25 @@ more code duplication, duplicate deployment flows
 It is possible to reference resources across configs with terraform_remote_state
 
 Terragrunt from gruntwork.io can help with cfg splitting
+
+Testing code
+motivation:
+over time, dependencies can change,
+infra can be updated via updated via UI,
+cfg can be updated without being applied
+
+static checks
+built in-
+`terraform fmt`
+`terrrafooorm validate`
+terraform plan regularly
+custom validation rules in cfg blocks
+
+external -
+tflint
+scanning tools, for security: checkov, tfsec, terrascan, terraform-coomplieance, snyk
+terraform sentinal
+
 
 Best Practices
 
@@ -209,3 +231,13 @@ deploying 02-webapp
 the differrence is that they offer examples for reusing and organizing settings
 04-modules deploying would be done from the web-app directory
 since the db password was not specified in the cfg, the cmdline will ask for it
+
+deploying 05-multienv
+(workspace)
+`terraform workspace list`
+`terraform workspace new <workspace name (e.g. dev or production)>`
+# then plan, and apply
+
+(file structure)
+apply global directory first then staging or production
+

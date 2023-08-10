@@ -1,6 +1,6 @@
 terraform {
   # Assumes s3 bucket and dynamo DB table already set up
-  # See backend folder
+  # See 02-webapp/backend folder
   backend "s3" {
     bucket         = "terraform-dive-tf-state"             # replace with your bucket name
     key            = "03-basics/web-app/terraform.tfstate" # directory of state file
@@ -205,7 +205,7 @@ resource "aws_lb" "load_balancer" {
 
 # resource "aws_route53_record" "root" {
 #   zone_id = aws_route53_zone.primary.zone_id
-#   name    = "devopsdeployed.com"
+#   name    = "mycoolwebsite.com"
 #   type    = "A"
 
 #   alias {
