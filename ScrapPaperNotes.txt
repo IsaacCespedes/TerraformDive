@@ -104,9 +104,49 @@ count allows for creating multiple of the same resource and can be indexed (coun
 for_each allows for iterables (e.g. cfg instance for list of subnet ids)
 lifecycle (e.g. before destroy, ignore changes, prevent destroy)
 
-provisioner
-actions on local or remote machine
+Provisioners
+actions on local or remote machine (e.g. bash script)
 
+Modules
+Bundles of configured resources, bundled for reusability
+Contains .tf and/or .tf.jsons files in a directory
+
+Modules can expose input variables for customization
+
+Root module - main working directory default module
+Child module - referenced from root module
+can be sourced from local path, TF Registry, Github (via http or ssh), and more...
+
+Local Path example cfg block
+
+module "web-app" {
+  source = "../web-app"
+}
+
+registry path example
+module "web-app" {
+  source = "hashicorp/consul/aws"
+  version="0.1.0"
+}
+
+Managing Separate Envs
+two approaches
+1 creating workspaces
+`terraform workspace new <workspace name (e.g. dev)>`
+this will create a new state in the backend
+
+minimizes code duplication
+can be referrenced via terraform.workspace expression
+
+but prone to human error, state files arer not isolated
+
+2 separating via modules, in different directories
+
+more code duplication, duplicate deployment flows
+
+It is possible to reference resources across configs with terraform_remote_state
+
+Terragrunt from gruntwork.io can help with cfg splitting
 
 Best Practices
 
@@ -164,3 +204,8 @@ deploying 02-webapp
 # find the dns name (a record) for the LB in ec2 dashboard
 # quickly enter this into the browser multiple times
 # you will see both responses, meaning the lb is working
+
+03-variables and 04-modules are the same as 02-webapp
+the differrence is that they offer examples for reusing and organizing settings
+04-modules deploying would be done from the web-app directory
+since the db password was not specified in the cfg, the cmdline will ask for it
