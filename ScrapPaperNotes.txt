@@ -39,6 +39,8 @@ Multiple cfgs can specify the same backend
 instance attributes are known after apply.
 you can see deploy in action on cloud UI.
 .. destroy - removes entire deployment associated to this project
+(-auto-approve flag allows for these commands to be scripted, 
+since the cli asks for typed-out confirmationo)
 
 State file -
 json format
@@ -169,6 +171,15 @@ tflint
 scanning tools, for security: checkov, tfsec, terrascan, terraform-coomplieance, snyk
 terraform sentinal
 
+Terratest - to automate tests with programming languages like Go,
+better than writing deployment script in bash
+
+Warnings:
+renaming may delete and then recreate a resoource
+state file can have secrets
+terraform may timeout while waiting on a resource
+state files must match the binary version it was built with
+some params are immutable andd may require a delete to update
 
 Best Practices
 
