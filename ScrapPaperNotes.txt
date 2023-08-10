@@ -19,17 +19,65 @@ Declarative - cfgs describe desired state instead of actions to take (imperative
 TF executes the delta of steps to reach desired state
 
 cmds
-`terraform init` - initialize BE (local by default)
+`terraform init` - initialize BE (state file storage, local by default)
+downloads code for providers, into .terraform hidden directory
+also downloads modules
+creates a lock file, which contains dependency info
+
+This backend should be remote, for security, collaboration, and automation,
+this is possible with TF cloud (free for up to 5 users), s3 + dynamo, or other cloud service
+
+Bootstraping State file: To do this, start with a local BE, provision the s3 in the config,
+and then configure the remote backend into the cfg to be the provisioned config.
+
+Multiple cfgs can specify the same backend
+
+
 `terraform refresh` - gets current state
 .. plan - previews the delta of necessary actions to reach desired state
 .. apply - executes plan above.
 instance attributes are known after apply.
 you can see deploy in action on cloud UI.
-.. destroy - removes entire deployment
+.. destroy - removes entire deployment associated to this project
 
 State file -
-reflects deployed infra : IP addrs, ARM, Data blocks (data outside of deployment)
+json format
+reflects deployed infra : IP addrs, ARN (unique resource id), Data blocks (data outside of deployment, e.g. from a third party API)
 > has sensitive data (passwords) <
+
+
+Variables
+Enables templating of configuration blocks and lines
+Variables can be stored in a separate cfg file
+
+Input - like input params for a function
+referenced as
+Input - var.<name>
+
+declared as
+variable "instance_type" {
+  description = "ec2 instance type"
+  type = string
+  default = "t2.micro"
+}
+
+local Variables - like local variables in a function, good for reuse
+references as
+local.<name>
+
+declared as
+locals {
+  service_name = "my service"
+  owner = "Terraform Dive"
+}
+
+output variables - like the return value of a function
+
+declared as
+output "instance_ip" {
+  value = aws_instance.instance.public_ip
+}
+
 
 Best Practices
 
@@ -45,7 +93,11 @@ host tf code in git repo.
 ensure the same review process as application code (i.e. PR reviews).
 only CI/CD pipelines should make infra updates.
 
-to run first example
+
+
+
+deploying 01-minimal
+
 `brew install terraform`
 google "install aws cli"
 create iam group with permissions
@@ -58,3 +110,28 @@ stored in ~/.aws/credentials on mac os
 `terraform init`
 `terraform plan`
 `terraform apply`
+
+deploying 02-webapp 
+(back end)
+# start with the backend cfg block commented out
+`terraform init` # creates local be / state file
+`terraform plan`
+`terraform apply` # creates s3 + dynamo db for atomic locks
+#after uncommenting backend cfg block
+# note : replace the bucket name in the backend and resource blocks, where commented
+`terraform init`
+
+## Now this message shows:
+##  "Pre-existing state was found while migrating the previous "local" backend to the
+##  newly configured "s3" backend. No existing state was found in the newly
+##  configured "s3" backend. Do you want to copy this state to the new "s3"
+##  backend? Enter "yes" to copy and "no" to start with an empty state."
+
+
+(web app)
+# replace bucket names where commented
+`terraform init` # inits backend stored in s3
+`terraform plan`
+# find the dns name (a record) for the LB in ec2 dashboard
+# quickly enter this into the browser multiple times
+# you will see both responses, meaning the lb is working
